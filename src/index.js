@@ -1,22 +1,17 @@
-export default {
-  async fetch(request, env, ctx) {
-    const url = new URL(request.url);
-    const pathParts = url.pathname.split('/');
-    const filename = pathParts[pathParts.length - 1];
+addEventListener('fetch', event => {
+  event.respondWith(handleRequest(event.request))
+})
 
-    // Only allow .zip files
-    if (!filename.endsWith('.zip')) {
-      return new Response('Invalid file request', { status: 400 });
-    }
+async function handleRequest(request) {
+  const url = new URL(request.url)
+  const studyFile = url.searchParams.get("file")  // e.g. ?file=abcd.zip
 
-    // Signed Wasabi S3 URL base
-    const baseWasabiUrl = 'https://s3.ap-southeast-1.wasabisys.com/admin.zouxo.com/studies';
-    
-    // ⚠️ Replace the query string below with your actual signed S3 query
-    const signedQuery = '?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=REPLACE_ME';
-
-    // Redirect to the signed Wasabi URL
-    const redirectUrl = `${baseWasabiUrl}/${filename}${signedQuery}`;
-    return Response.redirect(redirectUrl, 302);
+  if (!studyFile) {
+    return new Response("Missing file parameter", { status: 400 })
   }
-};
+
+  const proxyUrl = `https://s3.ap-southeast-1.wasabisys.com/admin.zouxo.com/studies/${studyFile}`
+  const response = await fetch(proxyUrl)
+
+  return new Response(response.body, response)
+}

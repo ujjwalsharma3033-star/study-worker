@@ -1,5 +1,6 @@
 name = "study-worker"
 main = "src/index.js"
+account_id="0bf1e8a0106c482925bbe19fafa0c590"
 compatibility_date = "2024-07-27"
 
 workers_dev = true

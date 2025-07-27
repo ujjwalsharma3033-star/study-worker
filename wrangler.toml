@@ -1,0 +1,5 @@
+name = "study-worker"
+main = "src/index.js"
+compatibility_date = "2024-07-27"
+
+workers_dev = true
